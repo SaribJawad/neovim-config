@@ -24,7 +24,6 @@ return {
 		local sources = {
 			diagnostics.checkmake,
 			formatting.prettier.with({
-				filetypes = { "html", "json", "yaml", "markdown", "typescript", "typescriptreact", "javascript" },
 				extra_args = { "--tab-width", "4" },
 			}),
 			formatting.stylua,
@@ -40,6 +39,11 @@ return {
 			sources = sources,
 			-- you can reuse a shared lspconfig on_attach callback here
 			on_attach = function(client, bufnr)
+				-- Disbable formaters like (tsserver)
+				if client.name ~= "null-ls" then
+					client.server_capabilities.documentFormattingProvider = false
+				end
+
 				if client.supports_method("textDocument/formatting") then
 					vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
 					vim.api.nvim_create_autocmd("BufWritePre", {
